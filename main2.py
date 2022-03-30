@@ -8,6 +8,12 @@ import pygame, sys, time
 # to avoid this confusion, we check the position of current frame but also previous frame
 # this way we know exactly where the collision came from, but requires more code
 
+# the final code there is still a bug where the player gets squeezed by a moving obstacle
+# and a static one. In this case, the player passes through the static one and keeps
+# being pushed by the moving one
+# also, if the ball is being pushed for some time, it thinks it is changing direction
+# many times and the final result is kind of random final direction
+
 
 class StaticObstacle(pygame.sprite.Sprite):
     def __init__(
