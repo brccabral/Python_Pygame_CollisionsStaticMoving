@@ -167,7 +167,12 @@ class Player(pygame.sprite.Sprite):
 
 
 class Ball(pygame.sprite.Sprite):
-    def __init__(self, groups: List[pygame.sprite.Group]):
+    def __init__(
+        self,
+        groups: List[pygame.sprite.Group],
+        obstacles: pygame.sprite.Group,
+        player: Player,
+    ):
         super().__init__(groups)
         self.image = pygame.Surface((40, 40))
         self.image.fill("red")
@@ -177,6 +182,68 @@ class Ball(pygame.sprite.Sprite):
         self.direction = pygame.math.Vector2(1, 1)
         self.speed = 400
         self.old_rect = self.rect.copy()  # previous frame
+
+        self.obstacles = obstacles
+        self.player = player
+
+    def collision(self, direction: pygame.math.Vector2):
+        collision_sprites: List[StaticObstacle] = pygame.sprite.spritecollide(
+            self, self.obstacles, False
+        )
+        if collision_sprites:
+            if direction == "horizontal":
+                for sprite in collision_sprites:
+                    # collision on the right
+                    if (
+                        self.rect.right >= sprite.rect.left
+                        and self.old_rect.right <= sprite.old_rect.left
+                    ):
+                        self.rect.right = sprite.rect.left
+                        self.pos.x = self.rect.x
+                        self.direction.x *= -1
+
+                    # collision on the left
+                    if (
+                        self.rect.left <= sprite.rect.right
+                        and self.old_rect.left >= sprite.old_rect.right
+                    ):
+                        self.rect.left = sprite.rect.right
+                        self.pos.x = self.rect.x
+                        self.direction.x *= -1
+
+            if direction == "vertical":
+                for sprite in collision_sprites:
+                    # collision on the bottom
+                    if (
+                        self.rect.bottom >= sprite.rect.top
+                        and self.old_rect.bottom <= sprite.old_rect.top
+                    ):
+                        self.rect.bottom = sprite.rect.top
+                        self.pos.y = self.rect.y
+                        self.direction.y *= -1
+
+                    # collision on the top
+                    if (
+                        self.rect.top <= sprite.rect.bottom
+                        and self.old_rect.top >= sprite.old_rect.bottom
+                    ):
+                        self.rect.top = sprite.rect.bottom
+                        self.pos.y = self.rect.y
+                        self.direction.y *= -1
+
+    def update(self, dt: float):
+        self.old_rect = self.rect.copy()  # previous frame
+
+        if self.direction.magnitude() != 0:
+            # avoid diagonal speed faster than axis speed
+            self.direction = self.direction.normalize()
+
+        self.pos.x += self.direction.x * self.speed * dt
+        self.rect.x = round(self.pos.x)
+        self.collision("horizontal")
+        self.pos.y += self.direction.y * self.speed * dt
+        self.rect.y = round(self.pos.y)
+        self.collision("vertical")
 
 
 # general setup
@@ -193,8 +260,8 @@ StaticObstacle((800, 600), (100, 200), [all_sprites, collision_sprites])
 StaticObstacle((900, 200), (200, 10), [all_sprites, collision_sprites])
 MovingVerticalObstacle((200, 300), (200, 60), [all_sprites, collision_sprites])
 MovingHorizontalObstacle((850, 350), (100, 100), [all_sprites, collision_sprites])
-Player(all_sprites, collision_sprites)
-Ball(all_sprites)
+player = Player(all_sprites, collision_sprites)
+Ball(all_sprites, collision_sprites, player)
 
 # loop
 last_time = time.time()
