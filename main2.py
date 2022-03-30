@@ -1,5 +1,12 @@
 import pygame, sys, time
 
+# to detect collision we need to know where the collision came from (top, bottom, left, right)
+# just checking the direction of one object is not enough because they can be in the same direction
+# but one object moving faster than the other, the collision might think it happened on the
+# other side.
+# to avoid this confusion, we check the position of current frame but also previous frame
+# this way we know exactly where the collision came from, but requires more code
+
 
 class StaticObstacle(pygame.sprite.Sprite):
     def __init__(self, pos, size, groups):
