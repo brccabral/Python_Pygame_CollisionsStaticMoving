@@ -211,7 +211,7 @@ class Ball(pygame.sprite.Sprite):
                         self.pos.x = self.rect.x
                         self.direction.x *= -1
 
-            if direction == "vertical":
+            elif direction == "vertical":
                 for sprite in collision_sprites:
                     # collision on the bottom
                     if (
@@ -231,6 +231,27 @@ class Ball(pygame.sprite.Sprite):
                         self.pos.y = self.rect.y
                         self.direction.y *= -1
 
+    def window_collision(self, direction: str):
+        if direction == "horizontal":
+            if self.rect.left < 0:
+                self.rect.left = 0
+                self.pos.x = self.rect.x
+                self.direction.x *= -1
+            if self.rect.right > 1280:
+                self.rect.right = 1280
+                self.pos.x = self.rect.x
+                self.direction.x *= -1
+
+        elif direction == "vertical":
+            if self.rect.top < 0:
+                self.rect.top = 0
+                self.pos.y = self.rect.y
+                self.direction.y *= -1
+            if self.rect.bottom > 720:
+                self.rect.bottom = 720
+                self.pos.y = self.rect.y
+                self.direction.y *= -1
+
     def update(self, dt: float):
         self.old_rect = self.rect.copy()  # previous frame
 
@@ -241,9 +262,11 @@ class Ball(pygame.sprite.Sprite):
         self.pos.x += self.direction.x * self.speed * dt
         self.rect.x = round(self.pos.x)
         self.collision("horizontal")
+        self.window_collision("horizontal")
         self.pos.y += self.direction.y * self.speed * dt
         self.rect.y = round(self.pos.y)
         self.collision("vertical")
+        self.window_collision("vertical")
 
 
 # general setup
