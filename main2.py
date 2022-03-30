@@ -109,7 +109,7 @@ class Player(pygame.sprite.Sprite):
         else:
             self.direction.x = 0
 
-    def collision(self, direction: pygame.math.Vector2):
+    def collision(self, direction: str):
         collision_sprites: List[StaticObstacle] = pygame.sprite.spritecollide(
             self, self.obstacles, False
         )
@@ -186,7 +186,7 @@ class Ball(pygame.sprite.Sprite):
         self.obstacles = obstacles
         self.player = player
 
-    def collision(self, direction: pygame.math.Vector2):
+    def collision(self, direction: str):
         collision_sprites: List[StaticObstacle] = pygame.sprite.spritecollide(
             self, self.obstacles, False
         )
