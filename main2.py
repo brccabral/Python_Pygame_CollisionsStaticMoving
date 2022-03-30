@@ -14,6 +14,7 @@ class StaticObstacle(pygame.sprite.Sprite):
         self.image = pygame.Surface(size)
         self.image.fill("yellow")
         self.rect = self.image.get_rect(topleft=pos)
+        self.old_rect = self.rect.copy()
 
 
 class MovingVerticalObstacle(StaticObstacle):
@@ -25,6 +26,7 @@ class MovingVerticalObstacle(StaticObstacle):
         self.speed = 450
 
     def update(self, dt):
+        self.old_rect = self.rect.copy()  # previous frame
         if self.rect.bottom > 600:
             self.rect.bottom = 600
             self.pos.y = self.rect.y
@@ -35,7 +37,7 @@ class MovingVerticalObstacle(StaticObstacle):
             self.direction.y *= -1
 
         self.pos.y += self.direction.y * self.speed * dt
-        self.rect.y = round(self.pos.y)
+        self.rect.y = round(self.pos.y)  # current frame
 
 
 class MovingHorizontalObstacle(StaticObstacle):
@@ -47,6 +49,7 @@ class MovingHorizontalObstacle(StaticObstacle):
         self.speed = 400
 
     def update(self, dt):
+        self.old_rect = self.rect.copy()  # previous frame
         if self.rect.right > 1000:
             self.rect.right = 1000
             self.pos.x = self.rect.x
@@ -57,7 +60,7 @@ class MovingHorizontalObstacle(StaticObstacle):
             self.direction.x *= -1
 
         self.pos.x += self.direction.x * self.speed * dt
-        self.rect.x = round(self.pos.x)
+        self.rect.x = round(self.pos.x)  # current frame
 
 
 class Player(pygame.sprite.Sprite):
@@ -75,6 +78,7 @@ class Player(pygame.sprite.Sprite):
         self.pos = pygame.math.Vector2(self.rect.topleft)
         self.direction = pygame.math.Vector2()
         self.speed = 200
+        self.old_rect = self.rect.copy()  # previous frame
 
     def input(self):
         keys = pygame.key.get_pressed()
@@ -95,6 +99,7 @@ class Player(pygame.sprite.Sprite):
             self.direction.x = 0
 
     def update(self, dt):
+        self.old_rect = self.rect.copy()  # previous frame
         self.input()
 
         if self.direction.magnitude() != 0:
@@ -117,6 +122,7 @@ class Ball(pygame.sprite.Sprite):
         self.pos = pygame.math.Vector2(self.rect.topleft)
         self.direction = pygame.math.Vector2(1, 1)
         self.speed = 400
+        self.old_rect = self.rect.copy()  # previous frame
 
 
 # general setup
