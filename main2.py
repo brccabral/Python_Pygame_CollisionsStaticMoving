@@ -1,3 +1,4 @@
+from typing import List, Tuple
 import pygame, sys, time
 
 # to detect collision we need to know where the collision came from (top, bottom, left, right)
@@ -9,7 +10,9 @@ import pygame, sys, time
 
 
 class StaticObstacle(pygame.sprite.Sprite):
-    def __init__(self, pos, size, groups):
+    def __init__(
+        self, pos: Tuple[int], size: Tuple[int], groups: List[pygame.sprite.Group]
+    ):
         super().__init__(groups)
         self.image = pygame.Surface(size)
         self.image.fill("yellow")
@@ -18,14 +21,16 @@ class StaticObstacle(pygame.sprite.Sprite):
 
 
 class MovingVerticalObstacle(StaticObstacle):
-    def __init__(self, pos, size, groups):
+    def __init__(
+        self, pos: Tuple[int], size: Tuple[int], groups: List[pygame.sprite.Group]
+    ):
         super().__init__(pos, size, groups)
         self.image.fill("green")
         self.pos = pygame.math.Vector2(self.rect.topleft)
         self.direction = pygame.math.Vector2((0, 1))
         self.speed = 450
 
-    def update(self, dt):
+    def update(self, dt: float):
         self.old_rect = self.rect.copy()  # previous frame
         if self.rect.bottom > 600:
             self.rect.bottom = 600
@@ -41,14 +46,16 @@ class MovingVerticalObstacle(StaticObstacle):
 
 
 class MovingHorizontalObstacle(StaticObstacle):
-    def __init__(self, pos, size, groups):
+    def __init__(
+        self, pos: Tuple[int], size: Tuple[int], groups: List[pygame.sprite.Group]
+    ):
         super().__init__(pos, size, groups)
         self.image.fill("purple")
         self.pos = pygame.math.Vector2(self.rect.topleft)
         self.direction = pygame.math.Vector2((1, 0))
         self.speed = 400
 
-    def update(self, dt):
+    def update(self, dt: float):
         self.old_rect = self.rect.copy()  # previous frame
         if self.rect.right > 1000:
             self.rect.right = 1000
@@ -64,7 +71,9 @@ class MovingHorizontalObstacle(StaticObstacle):
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, groups):
+    def __init__(
+        self, groups: List[pygame.sprite.Group], obstacles: pygame.sprite.Group
+    ):
         super().__init__(groups)
 
         # image
@@ -98,7 +107,7 @@ class Player(pygame.sprite.Sprite):
         else:
             self.direction.x = 0
 
-    def update(self, dt):
+    def update(self, dt: float):
         self.old_rect = self.rect.copy()  # previous frame
         self.input()
 
@@ -113,7 +122,7 @@ class Player(pygame.sprite.Sprite):
 
 
 class Ball(pygame.sprite.Sprite):
-    def __init__(self, groups):
+    def __init__(self, groups: List[pygame.sprite.Group]):
         super().__init__(groups)
         self.image = pygame.Surface((40, 40))
         self.image.fill("red")
