@@ -89,6 +89,8 @@ class Player(pygame.sprite.Sprite):
         self.speed = 200
         self.old_rect = self.rect.copy()  # previous frame
 
+        self.obstacles = obstacles
+
     def input(self):
         keys = pygame.key.get_pressed()
 
@@ -107,6 +109,47 @@ class Player(pygame.sprite.Sprite):
         else:
             self.direction.x = 0
 
+    def collision(self, direction: pygame.math.Vector2):
+        collision_sprites: List[StaticObstacle] = pygame.sprite.spritecollide(
+            self, self.obstacles, False
+        )
+        if collision_sprites:
+            if direction == "horizontal":
+                for sprite in collision_sprites:
+                    # collision on the right
+                    if (
+                        self.rect.right >= sprite.rect.left
+                        and self.old_rect.right <= sprite.old_rect.left
+                    ):
+                        self.rect.right = sprite.rect.left
+                        self.pos.x = self.rect.x
+
+                    # collision on the left
+                    if (
+                        self.rect.left <= sprite.rect.right
+                        and self.old_rect.left >= sprite.old_rect.right
+                    ):
+                        self.rect.left = sprite.rect.right
+                        self.pos.x = self.rect.x
+
+            if direction == "vertical":
+                for sprite in collision_sprites:
+                    # collision on the bottom
+                    if (
+                        self.rect.bottom >= sprite.rect.top
+                        and self.old_rect.bottom <= sprite.old_rect.top
+                    ):
+                        self.rect.bottom = sprite.rect.top
+                        self.pos.y = self.rect.y
+
+                    # collision on the top
+                    if (
+                        self.rect.top <= sprite.rect.bottom
+                        and self.old_rect.top >= sprite.old_rect.bottom
+                    ):
+                        self.rect.top = sprite.rect.bottom
+                        self.pos.y = self.rect.y
+
     def update(self, dt: float):
         self.old_rect = self.rect.copy()  # previous frame
         self.input()
@@ -117,8 +160,10 @@ class Player(pygame.sprite.Sprite):
 
         self.pos.x += self.direction.x * self.speed * dt
         self.rect.x = round(self.pos.x)
+        self.collision("horizontal")
         self.pos.y += self.direction.y * self.speed * dt
         self.rect.y = round(self.pos.y)
+        self.collision("vertical")
 
 
 class Ball(pygame.sprite.Sprite):
@@ -148,7 +193,7 @@ StaticObstacle((800, 600), (100, 200), [all_sprites, collision_sprites])
 StaticObstacle((900, 200), (200, 10), [all_sprites, collision_sprites])
 MovingVerticalObstacle((200, 300), (200, 60), [all_sprites, collision_sprites])
 MovingHorizontalObstacle((850, 350), (100, 100), [all_sprites, collision_sprites])
-Player(all_sprites)
+Player(all_sprites, collision_sprites)
 Ball(all_sprites)
 
 # loop
