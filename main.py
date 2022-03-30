@@ -21,13 +21,25 @@ def bouncing_rect():
     # collision with other rect
     collision_tolerance = 10
     if moving_rect.colliderect(other_rect):
-        if abs(other_rect.top - moving_rect.bottom) < collision_tolerance:
+        if (
+            abs(other_rect.top - moving_rect.bottom) < collision_tolerance
+            and y_speed > 0
+        ):
             y_speed *= -1
-        if abs(other_rect.bottom - moving_rect.top) < collision_tolerance:
+        if (
+            abs(other_rect.bottom - moving_rect.top) < collision_tolerance
+            and y_speed < 0
+        ):
             y_speed *= -1
-        if abs(other_rect.right - moving_rect.left) < collision_tolerance:
+        if (
+            abs(other_rect.right - moving_rect.left) < collision_tolerance
+            and x_speed < 0
+        ):
             x_speed *= -1
-        if abs(other_rect.left - moving_rect.right) < collision_tolerance:
+        if (
+            abs(other_rect.left - moving_rect.right) < collision_tolerance
+            and x_speed > 0
+        ):
             x_speed *= -1
 
     pygame.draw.rect(screen, "white", moving_rect)
