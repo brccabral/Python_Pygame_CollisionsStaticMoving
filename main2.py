@@ -190,6 +190,11 @@ class Ball(pygame.sprite.Sprite):
         collision_sprites: List[StaticObstacle] = pygame.sprite.spritecollide(
             self, self.obstacles, False
         )
+
+        # make player part of the collision sprites if there is a collision
+        if self.rect.colliderect(self.player.rect):
+            collision_sprites.append(self.player)
+
         if collision_sprites:
             if direction == "horizontal":
                 for sprite in collision_sprites:
